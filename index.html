@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <input type="text" name="id" id="id" placeholder="orderId">
+    <input type="text" name="key" id="key" placeholder="apiKey">
+    <ul>
+        <li onclick="toDemo('tazapay')">
+            <a href="#">tazapay</a>
+        </li>
+        <li onclick="toDemo('checkout')">
+            <a href="#">checkout</a>
+        </li>
+    </ul>
+</body>
+<script>
+    function toDemo(name) {
+
+        const id = document.getElementById("id").value
+        const key = document.getElementById("key").value
+
+        if(!id){
+            alert("orderId can not be empty")
+            return ;
+        }
+        if(!key && name == 'checkout'){
+            alert("apiKey can not be empty")
+            return ;
+        }
+        let url =  `/${name}/demo.html?id=${id}`
+        if(key){
+            url += `${url}&key=${key}`
+        }
+
+        window.location.href = url
+    }
+</script>
+</html>
