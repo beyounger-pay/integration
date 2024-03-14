@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <title></title>
     <meta name="viewport" content="user-scalable=no, width=device-width initial-scale=1.0， maximum-scale=1.0" />
-    <script type="text/javascript" src="https://js.tazapay.com/v2.0.js"></script> 
+    <script type="text/javascript" src="https://js.tazapay.com/v2.0.js"></script>
     <!-- 线上JS地址 -->
 </head>
 
@@ -14,7 +14,22 @@
 </body>
 
 <script>
-    const orderId = '';
+
+    let orderId = '';
+
+    if (!orderId) {
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
+        }
+        orderId = getQueryVariable('id') //==> ?id=123
+    }
+
     const baseUrl = "https://api.beyounger.com"; //线上地址
     const publicKeyUrl = `${baseUrl}/v1/checkout?id=${orderId}`;
     const method = "card"
@@ -152,8 +167,8 @@
             first_name,
             last_name,
             zipcode
-        } = customer||{}
-        const { client_token: clientToken, public_key: publicKey ,return_url } = channel_data||{}
+        } = customer || {}
+        const { client_token: clientToken, public_key: publicKey, return_url } = channel_data || {}
 
         const params = {
             clientToken,
@@ -180,14 +195,14 @@
                 },
                 phone: {
                     country_code: "+1",
-                    number:phone,
+                    number: phone,
                 }
             }
         }
 
 
         console.log(params)
-        const isValid = params.publicKey&& params.clientToken&& params.returnUrl;
+        const isValid = params.publicKey && params.clientToken && params.returnUrl;
         console.log(isValid)
         if (isValid) {
             initPayment(params);
