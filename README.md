@@ -2,7 +2,7 @@
 
 ## cko 模式
 
-[例子 cko/demo.html](./checkout/demo.html)
+[ckpay/demo.html](./ckpay/demo.html)
 
 #### Step 1: 获取token。
 通过接口获取公钥。
@@ -13,7 +13,7 @@ const publicKeyUrl = `${baseUrl}/v1/saas/checkout?apiKey=${apiKey}`;
 
 ```
 
-有了公钥，才能显示Checkout内嵌页面。
+有了公钥，才能显示ckpay内嵌页面。
 
 用户输入卡号、过期时间、cvv后，提交后能拿到付款token。
 
@@ -27,9 +27,9 @@ const publicKeyUrl = `${baseUrl}/v1/saas/checkout?apiKey=${apiKey}`;
 const payUrl = `${baseUrl}/v1/channel/payment`;let params = { id: orderId, tokenization: token,};
 ```
 
-## tazapay 模式
+## tpay 模式
 
-[例子 tazapay/demo.html](./tazapay/demo.html)
+[tpay/demo.html](./tpay/demo.html)
 
 #### Step 1: 调用 “收单-创建支付订单（跳转模式）” 接口。
 
@@ -40,7 +40,7 @@ const publicKeyUrl = `${baseUrl}/v1/checkout?id=${orderId}`;
 
 ```
 
-获取参数，才能显示该订单对应tazapay内嵌页面。
+有了公钥和Token，才能显示该订单对应tpay内嵌页面。
 
 #### Step 3: 用户输入卡号、过期时间、cvv后，点击付款，结束支付
 

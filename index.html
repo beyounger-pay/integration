@@ -1,22 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    .first{
+        padding-top: 40px;
+    }
+    form {
+        background: rgba(19, 35, 47, 0.9);
+        padding: 40px;
+        max-width: 600px;
+        margin: 40px auto;
+        border-radius: 4px;
+        box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+    }
+
+    input {
+        display: block;
+        margin: 20px auto;
+        font-size: 22px;
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 5px 10px;
+        background: none;
+        background-image: none;
+        border: 1px solid #a0b3b0;
+        color: #ffffff;
+        border-radius: 0;
+        transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    button {
+        width: 200px;
+        height: 40px;
+        display: block;
+        margin: 20px auto;
+        border: 0;
+        outline: none;
+        border-radius: 0;
+        padding: 10px 0;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        background: #1ab188;
+        color: #ffffff;
+        transition: all 0.5s ease;
+    }
+</style>
+
 <body>
-    
-    <input type="text" name="id" id="id" placeholder="orderId">
-    <input type="text" name="key" id="key" placeholder="apiKey">
-    <ul>
-        <li onclick="toDemo('tazapay')">
-            <a href="#">tazapay</a>
-        </li>
-        <li onclick="toDemo('checkout')">
-            <a href="#">checkout</a>
-        </li>
-    </ul>
+    <form>
+        <div class="first">
+            <input type="text" name="id" id="id" placeholder="orderId(Required)">
+        </div>
+        <div>
+            <input type="text" name="key" id="key" placeholder="apiKey(ckpay Required)">
+        </div>
+        <div class="first">
+            <button  type="button" onclick="toDemo('tpay')">tpay</button>
+        </div>
+
+        <div>
+            <button type="button" onclick="toDemo('ckpay')">ckpay</button>
+        </div>
+    </form>
+
 </body>
 <script>
     function toDemo(name) {
@@ -24,20 +77,21 @@
         const id = document.getElementById("id").value
         const key = document.getElementById("key").value
 
-        if(!id){
+        if (!id) {
             alert("orderId can not be empty")
-            return ;
+            return;
         }
-        if(!key && name == 'checkout'){
+        if (!key && name == 'ckpay') {
             alert("apiKey can not be empty")
-            return ;
+            return;
         }
-        let url =  `/${name}/demo.html?id=${id}`
-        if(key){
+        let url = `/${name}/demo.html?id=${id}`
+        if (key) {
             url += `${url}&key=${key}`
         }
 
         window.location.href = url
     }
 </script>
+
 </html>
