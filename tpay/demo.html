@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <title></title>
     <meta name="viewport" content="user-scalable=no, width=device-width initial-scale=1.0， maximum-scale=1.0" />
-    <script type="text/javascript" src="https://js.tazapay.com/v2.0.js"></script>
+    <!-- <script type="text/javascript" src="https://js.tazapay.com/v2.0.js"></script> -->
     <!-- 线上JS地址 -->
 </head>
 
@@ -14,11 +14,8 @@
 </body>
 
 <script>
-
-    let orderId = '';
-
-    if (!orderId) {
-        function getQueryVariable(variable) {
+// 工具函数
+function getQueryVariable(variable) {
             var query = window.location.search.substring(1);
             var vars = query.split("&");
             for (var i = 0; i < vars.length; i++) {
@@ -26,7 +23,40 @@
                 if (pair[0] == variable) { return pair[1]; }
             }
             return (false);
-        }
+}
+
+function loadTpayJS(url, callback){
+  var script = document.createElement('script');
+  var fn = callback || function () {};
+  script.type = 'text/javascript';
+
+  // IE
+  if (script.readyState) {
+    script.onreadystatechange = function () {
+      if( script.readyState === 'loaded' || script.readyState === 'complete' ){
+        script.onreadystatechange = null;
+        fn();
+      }
+    };
+  } else {
+    //其他浏览器
+    script.onload = function () {
+      fn();
+    };
+  }
+  script.src = url;
+  document.getElementsByTagName('head')[0].appendChild(script);
+}
+
+</script>
+
+<script>
+
+
+
+    let orderId = '';
+
+    if (!orderId) {
         orderId = getQueryVariable('id') //==> ?id=123
     }
 
@@ -161,8 +191,9 @@
             last_name,
             zipcode
         } = customer || {}
-        const { client_token: clientToken, public_key: publicKey, return_url } = channel_data || {}
+        const { script_url, client_token: clientToken, public_key: publicKey, return_url } = channel_data || {}
 
+        
         const params = {
             clientToken,
             publicKey,
@@ -197,8 +228,11 @@
         console.log(params)
         const isValid = params.publicKey && params.clientToken && params.returnUrl;
         console.log(isValid)
-        if (isValid) {
-            initPayment(params);
+        if (isValid && script_url) {
+            // 根据接口加载当前环境需要的js地址 
+            loadTpayJS(script_url, () => {
+                initPayment(params);
+            })
         }
 
     });
