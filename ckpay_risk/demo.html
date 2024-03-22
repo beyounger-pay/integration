@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BY</title>
+    <script id="risk-js" async src="https://risk.sandbox.checkout.com/cdn/risk/1/risk.js"></script>
+</head>
+
+<body>
+    <div>
+        <span>id:</span>
+        <span id="deviceSessionId"></span>
+    </div>
+
+    <script>
+        let device_session_id = ''
+        const baseUrl = "https://api-sandbox.beyounger.com"; //测试地址
+        const apiKey = ""; // 用于获取 publicKey
+        const publicKeyUrl = `${baseUrl}/v1/saas/checkout?apiKey=${apiKey}`;
+
+
+
+        
+
+        const getPublickKeyMethod = () => {
+            return new Promise(function (resolve, reject) {
+                fetch(publicKeyUrl, {
+                    method: "GET", // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((result) => {
+                        resolve(result);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        };
+
+        const script = document.getElementById('risk-js');
+
+
+        script.addEventListener('load', () => {
+            // use Risk.js here
+            console.log('load')
+            getPublickKeyMethod().then(publicKey => {
+                const risk = window.Risk.init(publicKey)
+                risk.publishRiskData().then(e => {
+                    console.log('deviceSessionId', e)
+                    device_session_id = e
+                    document.getElementById('deviceSessionId').innerText = e
+                })
+            })
+
+        });
+
+    </script>
+</body>
+
+</html>
