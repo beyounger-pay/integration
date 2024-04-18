@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <title>Document</title>
+
+    <!-- Required -->
+    <script src="https://checkoutshopper-live.adyen.com/checkoutshopper/sdk/5.61.0/adyen.js"
+        integrity="sha384-zFQEbSKuuwkEODuLNO/ttyx9nffjHMUsdBycqSAfeqbOvMULrOcxvUBj6YhwF7Jx"
+        crossorigin="anonymous"></script>
+
+    <!-- Required -->
+    <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/sdk/5.60.0/adyen.css"
+        integrity="sha384-zgFNrGzbwuX5qJLys75cOUIGru/BoEzhGMyC07I3OSdHqXuhUfoDPVG03G+61oF4" crossorigin="anonymous">
+   
+   <style>
+    /* 非必需 可根据需求修改或删除 */
+        div {
+            box-sizing: border-box;
+        }
+
+        label.cardno-label {
+            padding-top: 20px;
+            height: auto;
+        }
+
+        input {
+            width: 120px;
+            font-size: 17px
+        }
+
+        .input-container.expiry-date {
+            margin-right: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            min-height: 40px;
+        }
+
+        label {
+            display: block;
+            /* height: 10px; */
+            /* color: #13395e; */
+            color: #888;
+            font-size: 14px;
+            /* font-weight: 500; */
+            line-height: 10px;
+            margin: 8px 0;
+        }
+
+        .date-and-code {
+            display: flex;
+            margin-bottom: 8px;
+            column-gap: 30px;
+        }
+
+        .date-and-code div {
+            flex: 1;
+        }
+
+        .input-container.cardno {
+            margin-bottom: 8px;
+            margin-top: 18px;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            height: 40px;
+        }
+
+        .err-msg {
+            color: red;
+        }
+
+        .long {
+            width: 100%;
+        }
+
+        .currencyContainer {
+            width: 355px;
+            max-width: 100%;
+            margin: auto;
+            margin-top: 100px;
+            border-radius: 20px;
+            background-color: #fff;
+            padding: 30px;
+            /* box-shadow: 0px 40px 40px 40px rgba(0, 69, 255, 0.06); */
+            position: relative;
+            min-height: 420px;
+            box-sizing: border-box;
+        }
+
+        #container {
+            margin-top: 20px;
+        }
+
+        .pay {
+            padding: 0;
+            margin: 0;
+            background: transparent;
+            border: none;
+            color: #fff;
+            width: calc(100%);
+            text-align: center;
+            font-size: 14px;
+            height: 100%;
+            line-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pay-button {
+            background-color: rgb(0, 69, 255, 0.75);
+            height: 40px;
+        }
+
+        .pay-button:disabled {
+            background-color: rgb(0, 69, 255, 0.2);
+            cursor: not-allowed;
+        }
+
+
+        .amountTitle {
+            color: #0045ff;
+        }
+
+        .tipsCard {
+            color: #888;
+        }
+
+        .bottomBorder {
+            height: 1px;
+            background-color: #f0f0f0;
+            box-shadow: 0px 40px 40px 0px rgba(0, 69, 255, 0.06);
+            border-radius: 16px;
+            margin-top: 10px;
+        }
+
+        #cardno-field {
+            border: none;
+            border-bottom: 2px solid rgba(64, 71, 214, .06);
+            padding-left: 12px;
+        }
+
+        #cvv-field,
+        #date-field {
+            border: none;
+            border-bottom: 2px solid rgba(64, 71, 214, .06);
+            padding-left: 12px;
+            margin-top: 10px;
+            height: 40px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="currencyContainer">
+        <div style="background-color: #fff">
+            <form id="payment-form" method="POST" action="">
+                <label class="cardno-label" for="cardno">Card Number</label>
+                <div class="input-container cardno long">
+                    <!-- Required -->
+                    <span data-cse="encryptedCardNumber"></span>
+                </div>
+
+                <div class="date-and-code">
+                    <div>
+                        <label class="date-label" for="expiry-date">MM / YY</label>
+                        <div class="input-container expiry-date ">
+                            <!-- Required -->
+                            <span data-cse="encryptedExpiryDate"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="cvv-label" for="cvv">CVV</label>
+                        <div class="input-container cvv">
+                            <!-- Required -->
+                            <span data-cse="encryptedSecurityCode"></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="height:40px"></div>
+                <button class="pay pay-button" disabled id="pay-button" type="button">
+                    Pay
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    // data-cse 的三个元素为必需
+    let err = true;
+    let loading = false;
+    let orderId = ""; //beyouger 的订单号  根据实际的订单号 填写
+    if (!orderId) {
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
+        }
+        orderId = getQueryVariable('id') //==> ?id=123
+    }
+    const baseUrl = "https://api.beyounger.com"; //接口地址
+    const payUrl = `${baseUrl}/v1/channel/payment`;
+    const clientKey = ''
+    const environment = 'live'
+    var cardDetailInfo = {
+    }
+    const renderDomParentId = '#payment-form'
+</script>
+<script>
+
+
+    const btn = document.getElementById('pay-button')
+    document.getElementById('pay-button').addEventListener('click', function () {
+        submitCardInfo()
+    })
+
+    function submitCardInfo() {
+
+        if (loading) {
+            console.log("fetch loading");
+            return;
+        }
+        let params = {
+            id: orderId,
+            tokenization: JSON.stringify(cardDetailInfo),
+        };
+        loading = true;
+
+        fetch(payUrl, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(params), // body data type must match "Content-Type" header
+        })
+            .then((response) => response.json())
+            .then((res) => {
+                if (res.code === 0) {
+                    //成功 根据数据执行不同的操作
+                } else if (res.code === 111072) {
+                    alert(res.msg)
+                } else {
+                    alert(res.msg)
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            })
+            .finally(() => {
+                //重置 使可再次提交
+                loading = false;
+            });
+
+    }
+
+
+</script>
+<script>
+    async function initFrame() {
+        function handleOnSubmit(state, component) {
+            console.log(state, component)
+        }
+
+        const configuration = {
+            locale: "en_US",
+            environment,
+            clientKey,
+            onSubmit: handleOnSubmit
+        };
+        const checkout = await AdyenCheckout(configuration);
+        const customCard = checkout.create('securedfields', {
+            // Optional configuration
+            type: 'card',
+            brands: ['mc', 'visa', 'amex', 'bcmc', 'maestro'],
+            styles: {
+                error: {
+                    color: 'red'
+                },
+                validated: {
+                    color: 'green'
+                },
+                placeholder: {
+                    color: '#d8d8d8'
+                }
+            },
+            // Only for Web Components before 4.0.0.
+            // For Web Components 4.0.0 and above, configure aria-label attributes in translation files
+            ariaLabels: {
+                lang: 'en-GB',
+                encryptedCardNumber: {
+                    label: 'Credit or debit card number field',
+                    iframeTitle: 'Iframe for secured card number',
+                    error: 'Message that gets read out when the field is in the error state'
+                }
+            },
+            // Events
+            onSubmit: function (e) {
+                console.log(e)
+            },
+            onValid: function (e) {
+                const { browserInfo, paymentMethod, riskData } = e.data
+
+                cardDetailInfo = {
+                    ...cardDetailInfo,
+                    ...paymentMethod
+                }
+                document.getElementById('pay-button').disabled = false
+
+            },
+            onLoad: function (e) {
+                //  console.log('loaded', e)
+            },
+            onConfigSuccess: function (e) {
+                //  console.log('config success', e)
+            },
+            onFieldValid: function (e) {
+                const { valid, type, fieldType, encryptedFieldName } = e
+
+                if (type === 'card' && !valid) {
+                    document.getElementById('pay-button').disabled = true
+                }
+
+                if (type === 'card' && valid && fieldType === 'encryptedCardNumber') {
+                    cardDetailInfo.bin = e.issuerBin
+                    cardDetailInfo.last4 = e.endDigits
+                    cardDetailInfo.encryptedCardNumber = e.blob
+                }
+                else if (type === 'card' && valid && fieldType === 'encryptedExpiryDate') {
+                    if (encryptedFieldName === 'encryptedExpiryMonth') {
+                        cardDetailInfo.encryptedExpiryMonth = e.blob
+                    }
+                    else if (encryptedFieldName === 'encryptedExpiryYear') {
+                        cardDetailInfo.encryptedExpiryYear = e.blob
+                    }
+
+                }
+                else if (type === 'card' && valid && fieldType === 'encryptedSecurityCode') {
+                    cardDetailInfo.encryptedSecurityCode = e.blob
+                }
+
+
+            },
+
+            onBrand: function (e) {
+                //  console.log('brand', e)
+            },
+            onError: function (e) {
+                //  console.log('error', e)
+            },
+            onFocus: function (e) {
+                //  console.log('focus', e)
+            },
+            onBinValue: function (bin) {
+                const { binValue } = bin
+                cardDetailInfo.bin = binValue
+            },
+            onBinLookup: function (callbackObj) {
+                //  console.log('bin lookup', callbackObj)
+            }
+        }).mount(renderDomParentId);
+
+    }
+
+    initFrame()
+</script>
+
+</html>

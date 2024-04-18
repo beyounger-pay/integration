@@ -46,3 +46,37 @@ const publicKeyUrl = `${baseUrl}/v1/checkout?id=${orderId}`;
 ### Step 3: 用户输入卡号、过期时间、cvv后，点击付款，结束支付
 
 ### Step 4: 在回调接口中获取付款结果，跳转相应的returnUrl
+
+## adyen 模式
+
+[adyen/demo.html](./adyen/demo.html)
+
+### Step 1: 准备完成订单的参数
+
+#### clientKey
+
+#### orderId
+
+#### 配置请求域名
+
+```javascript
+const clientKey = `clientKey`
+const orderId =`当前订单号`
+```
+
+### Step 2: 调用接口
+
+将获取的卡号信息通过`JSON.stringify`函数转换为字符串
+
+```javascript
+    const cardDetailInfo = {
+        encryptedCardNumber: '获取到的加密卡号',
+        encryptedExpiryMonth: '获取到的加密月份',
+        encryptedExpiryYear: '获取到的加密年份',
+        encryptedSecurityCode: '获取到的加密安全码',
+    }
+    let params = {
+      id: orderId,
+      tokenization: JSON.stringify(cardDetailInfo),
+    };
+```
