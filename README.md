@@ -80,3 +80,42 @@ const orderId =`当前订单号`
       tokenization: JSON.stringify(cardDetailInfo),
     };
 ```
+
+## antom 模式
+
+[antom/demo.html](./antom/demo.html)
+
+### Step 1: 调用 “收单-创建支付订单（跳转模式）” 接口
+
+### Step 2: 获取支付参数
+
+```javascript
+const publicKeyUrl = `${baseUrl}/v1/checkout?id=${orderId}`;
+
+```
+
+有了sessionData，才能显示该订单对应antom内嵌页面。
+
+### Step 3: 用户输入卡号、过期时间、cvv 姓名 后，点击付款，结束支付
+
+### Step 4: 在回调接口中获取付款结果，跳转相应的returnUrl
+
+## antom 模式
+
+[antom/demo.html](./antom/demo.html)
+
+### Step 1: 调用 “收单-创建支付订单（跳转模式）” 接口
+
+### Step 2: 获取支付参数
+
+```javascript
+const publicKeyUrl = `${baseUrl}/v1/checkout?id=${orderId}`;
+
+```
+
+有了sessionData，才能显示该订单对应antom内嵌页面。
+
+### Step 3: 用户输入卡号、过期时间、cvv 姓名 后，点击付款，结束支付
+
+### Step 4: 在回调接口中获取付款结果，跳转相应的returnUrl
+
